@@ -12,7 +12,7 @@ Idéal pour optimiser vos apports énergétiques et hydriques, améliorer la ges
 
 - Import de trace GPX pour analyser le parcours  
 - Paramétrage facile : durée, besoin glucidique, nombre et localisation des ravitaillements  
-- Calcul automatique des apports nutritionnels (glucides, caféine, hydratation) par heure et segment  
+- Calcul automatique des apports nutritionnels (glucides, caféine, hydratation) par heure et segment entre deux ravitaillements. Cela est effectué via un algorithme d'optimisation sous contrainte réalisée pour chaque heure.
 - Visualisation claire du plan nutritionnel sous forme de tableau et graphiques  
 
 ---
@@ -22,7 +22,8 @@ Idéal pour optimiser vos apports énergétiques et hydriques, améliorer la ges
 - Planification précise et adaptée à votre parcours et rythme prévu  
 - Gain de temps par rapport à une planification manuelle  
 - Optimisation de la performance et prévention des désagréments liés à la nutrition  
-- Solution libre, transparente et évolutive  
+- Solution libre, transparente et évolutive
+- Bientôt un estimateur de durée de course (à venir)
 
 ---
 ## Exemple d'utilisation sur le web
