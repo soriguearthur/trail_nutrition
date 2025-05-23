@@ -2,13 +2,11 @@ import streamlit as st
 import gpxpy
 import pandas as pd
 import io
-import import_ipynb
 from optimizer_script import generator,charger_trace
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
 
-import random
 
 st.set_page_config(page_title="Nutrition Trail", layout="wide")
 st.title("Optimisation Nutrition Trail")
