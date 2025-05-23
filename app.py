@@ -50,12 +50,12 @@ FATIGUE_MAX = st.slider("Fatigue en fin de course (0 = pas de fatigue ; 1 = extr
 
 # === 3. Points de ravitaillement ===
 default_ravitos = "14.7, 20.9, 30.8, 41, 48.8, 58.7, 69.7, 77.9"
-ravitos_input = st.text_input("Kilomètres des ravitaillements (ex: 14.7, 20.9, 30.8, 41, 48.8, 58.7,69.7, 77.9) Penser à mettre l'arrivée" ,value=default_ravitos)
+ravitos_input = st.text_input("Kilomètres des ravitaillements (ex: 14.7, 20.9, 30.8, 41, 48.8, 58.7,69.7)" ,value=default_ravitos)
 try:
     RAVITOS_KM = [float(km.strip()) for km in ravitos_input.split(",") if km.strip()]
-    RAVITOS_KM = [0] + RAVITOS_KM
+    RAVITOS_KM = [0] + RAVITOS_KM + [gpx.distance.max().round()]
 except:
-    st.error("Format des ravitos incorrect (utiliser des nombres séparés par des virgules et mettre bien l'arrivée).")
+    st.error("Format des ravitos incorrect (utiliser des nombres séparés par des virgules.")
     st.stop()
 
 # === 4. Ingrédients à saisir manuellement ===
