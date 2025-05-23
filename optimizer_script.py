@@ -192,6 +192,11 @@ def get_duree_cafeine_h(duree_cible, cafeine_max, ingredients):
     return int(duree_cible)
 
 def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafeine_max): 
+    min_g = 1000
+    for ing in ingredients:
+        if ing['glucides']<min_g:
+            min_g = ing['glucides']
+
     usage_counter = defaultdict(int)
     cafeine_min, glucides_min = get_ingredient_cafeine(ingredients)
     duree_cafeine_h = get_duree_cafeine_h(duree_cible,cafeine_max, ingredients)
@@ -202,6 +207,7 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
     cafeine_cumulee_cut = 0
 
     for _, row in df_glucides_h.iterrows():
+        error = False
         heure = int(row["heure"])
         glucides_boire = row["glucides_boire_par_h"]
         glucides_restants = glucides_cible - glucides_boire
@@ -233,8 +239,9 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
         glucides_restants_min = max(0, glucides_total_min - glucides_boire)
         glucides_restants_max = glucides_total_max - glucides_boire
 
-        constraints = [LinearConstraint([glucides], [glucides_restants_min], [glucides_restants_max])]
-
+        if glucides_restants_max >= min_g:
+            constraints = [LinearConstraint([glucides], [glucides_restants_min], [glucides_restants_max])]
+            print(heure,glucides_restants_min,glucides_restants_max)
 
         cafeine_restante_cut = cafeine_par_cut - cafeine_cumulee_cut
         if np.any(cafeines > 0):
@@ -273,7 +280,8 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
                 "cafeine": round(total_cafeine, 2)
             })
         else:
-            print(f"⚠️ Optimisation échouée pour l’heure {heure}: {res.message}")
+            error = True
+            #print(f"⚠️ Optimisation échouée pour l’heure {heure}: {res.message}")
             resultats_par_heure.append({
                 "heure": heure,
                 "glucides_liquide": round(glucides_boire, 2),
@@ -284,7 +292,7 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
             })
             
         for i, ing in enumerate(solides):
-            portion = int(round(res.x[i]))
+            portion = int(round(res.x[i])) if not error else 0
             if portion > 0:
                 usage_counter[ing["nom"]] += portion
 
@@ -292,7 +300,6 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
     resultats_par_heure = uniformiser_ingredients(resultats_par_heure, ingredients)
     resultats_par_heure = ajouter_timing(resultats_par_heure, ingredients)
     return resultats_par_heure
-
 
 def uniformiser_ingredients(df, ingredients):
     # Créer un dictionnaire d'ingrédients équivalents (par glucides), sans caféine
