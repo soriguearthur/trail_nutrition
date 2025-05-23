@@ -1,13 +1,6 @@
 streamlit
 gpxpy
 pandas
-io
-import_ipynb
-collections
 numpy
 matplotlib
 scipy
-math
-IPython
-base64
-pathlib
