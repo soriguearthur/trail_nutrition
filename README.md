@@ -33,41 +33,16 @@ Idéal pour optimiser vos apports énergétiques et hydriques, améliorer la ges
 
 ## Exemple d'utilisation en Python
 
-
 from IPython.display import display, HTML
 
+INGREDIENTS = [{"nom": "gel", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1,"presence":True},{"nom": "gel caf", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":100,"preference":1,"presence":True},{"nom": "boisson", "marque" : "naak", "glucides": 55, "volume_ml": 500, "categorie": "liquide", "cafeine":0,"preference":1,"presence":True}]
 
-GLUCIDES_CIBLES_G_H = 90
-NOMBRE_FLASQUES = 2
-TEMPS_CIBLE_TOTAL_HEURES = 12
-CAFEINE_MAX = 400
-MONTEE = 10 
-DESCENTE = 2
-FATIGUE_MAX = 0.3
-SEED = 42 
+c = [ingredient for ingredient in INGREDIENTS if ingredient.get("presence", False)]
 
-INGREDIENTS = [
-    {"nom": "puree", "marque" : "naak","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":.3,"presence":True},
-    {"nom": "gel", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1,"presence":True},
-    {"nom": "gel caf", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":100,"preference":1,"presence":True},
-    {"nom": "boisson", "marque" : "naak", "glucides": 55, "volume_ml": 500, "categorie": "liquide", "cafeine":0,"preference":1,"presence":True},
-    {"nom": "pate de fruits", "marque" : "decathlon","glucides": 20, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1,"presence":False},
-    {"nom": "barre amande", "marque" : "decathlon","glucides": 14, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1,"presence":False},
-    {"nom": "barre nougat", "marque" : "decathlon","glucides": 14, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1,"presence":False}
-]
-INGREDIENTS = [ingredient for ingredient in INGREDIENTS if ingredient.get("presence", False)]
-
-RAVITOS_KM = [14.7, 20.9, 30.8, 41, 48.8, 58.7,69.7]
-
-TRAIL = 'ANDORRA'
-GPX_PATH = "andorra_80.gpx"
-gpx = charger_trace(GPX_PATH)
-RAVITOS_KM = [0] + RAVITOS_KM + [gpx.distance.max().round(2)]
-
-results,plan = generator(gpx,RAVITOS_KM,TEMPS_CIBLE_TOTAL_HEURES,MONTEE,DESCENTE,FATIGUE_MAX,INGREDIENTS,NOMBRE_FLASQUES,GLUCIDES_CIBLES_G_H,CAFEINE_MAX,SEED)
+results,plan = generator(gpx=charger_trace(GPX_PATH),RAVITOS_KM[0,10,20],TEMPS_CIBLE_TOTAL_HEURES=90,MONTEE=10,DESCENTE=2,FATIGUE_MAX=.3,INGREDIENTS=INGREDIENTS,NOMBRE_FLASQUE=2,GLUCIDES_CIBLES_G_90,CAFEINE_MAX=400,SEED=42)
 
 resume_data = {
-    "Trail": [TRAIL],
+    "Trail": ['TRAIL'],
     "Distance": [results.km_fin.iloc[-1]],
     "D+": [results["D+"].sum()],
     "D-": [results["D-"].sum()],
