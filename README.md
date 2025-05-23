@@ -41,9 +41,9 @@ INGREDIENTS = [{"nom": "gel", "marque" : "maurten","glucides": 25, "volume_ml": 
 
 INGREDIENTS = [ingredient for ingredient in INGREDIENTS if ingredient.get("presence", False)]
 
-results,plan = generator(
-gpx=charger_trace(GPX_PATH),RAVITOS_KM=[0,10,20],TEMPS_CIBLE_TOTAL_HEURES=90,MONTEE=10,DESCENTE=2,
-FATIGUE_MAX=.3,INGREDIENTS=INGREDIENTS,NOMBRE_FLASQUE=2,GLUCIDES_CIBLES_G_90,CAFEINE_MAX=400,SEED=42)
+results,plan = generator(  
+gpx=charger_trace(GPX_PATH),RAVITOS_KM=[0,10,20],TEMPS_CIBLE_TOTAL_HEURES=90,MONTEE=10,DESCENTE=2,  
+FATIGUE_MAX=.3,INGREDIENTS=INGREDIENTS,NOMBRE_FLASQUE=2,GLUCIDES_CIBLES_G_90,CAFEINE_MAX=400,SEED=42)  
 
 
 resume_data = {
@@ -61,18 +61,18 @@ df_resume = pd.DataFrame(resume_data)
 
 total_ingredients = Counter()
 for d in results["ingrédients_solides"]:
-    total_ingredients.update(d)
-df_ingredients = pd.DataFrame(list(total_ingredients.items()),columns=["Ingrédient", "Quantité"])
-df_ingredients = pd.concat([df_ingredients.T,pd.Series(['boisson',results.flasques.sum()],index=['Ingrédient','Quantité'])],axis=1).T.reset_index(drop=True)
+    total_ingredients.update(d)  
+df_ingredients = pd.DataFrame(list(total_ingredients.items()),columns=["Ingrédient", "Quantité"])  
+df_ingredients = pd.concat([df_ingredients.T,pd.Series(['boisson',results.flasques.sum()],index=['Ingrédient','Quantité'])],axis=1).T.reset_index(drop=True)  
 
 
-plt.figure(figsize=(7,2))
-gpx.set_index('distance').altitude.plot()
-for rvt in RAVITOS_KM:
-    plt.axvline(x=rvt,color='red',alpha=.25)
-plt.grid()
-plt.title('Profil')
-plt.show()
+plt.figure(figsize=(7,2))  
+gpx.set_index('distance').altitude.plot()  
+for rvt in RAVITOS_KM:  
+    plt.axvline(x=rvt,color='red',alpha=.25)  
+plt.grid()  
+plt.title('Profil')  
+plt.show()  
 
 
 display(HTML(results[['km_debut', 'km_fin', 'D+', 'D-', 'durée', 'durée_cumulée', 'flasques', 'timing']].to_html(escape=False)))
