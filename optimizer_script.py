@@ -241,7 +241,6 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
 
         if glucides_restants_max >= min_g:
             constraints = [LinearConstraint([glucides], [glucides_restants_min], [glucides_restants_max])]
-            print(heure,glucides_restants_min,glucides_restants_max)
 
         cafeine_restante_cut = cafeine_par_cut - cafeine_cumulee_cut
         if np.any(cafeines > 0):
