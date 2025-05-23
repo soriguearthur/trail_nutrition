@@ -25,9 +25,13 @@ Idéal pour optimiser vos apports énergétiques et hydriques, améliorer la ges
 - Solution libre, transparente et évolutive  
 
 ---
+## Exemple d'utilisation sur le web
 
+- aller sur : https://nutrition-trail.streamlit.app/
+  
+---
 
-## Exemple d'utilisation
+## Exemple d'utilisation en Python
 
 
 from IPython.display import display, HTML
