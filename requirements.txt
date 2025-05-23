@@ -10,4 +10,4 @@ scipy
 math
 IPython
 base64
-pathlib import Path
+pathlib
