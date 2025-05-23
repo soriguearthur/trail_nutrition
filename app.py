@@ -3,7 +3,7 @@ import gpxpy
 import pandas as pd
 import io
 import import_ipynb
-from optimizer import generator,charger_trace
+from optimizer_script import generator,charger_trace
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
