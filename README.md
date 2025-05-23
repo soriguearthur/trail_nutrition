@@ -63,7 +63,7 @@ total_ingredients = Counter()
 for d in results["ingrédients_solides"]:
     total_ingredients.update(d)
 df_ingredients = pd.DataFrame(list(total_ingredients.items()),columns=["Ingrédient", "Quantité"])
-df_ingredients = pd.concat([df_ingredients.T,pd.Series(['boisson',results.flasques.sum()],index=['Ingrédient','Quantité'])],axis=1).T.reset_index(drop=True)
+\n df_ingredients = pd.concat([df_ingredients.T,pd.Series(['boisson',results.flasques.sum()],index=['Ingrédient','Quantité'])],axis=1).T.reset_index(drop=True)
 
 
 plt.figure(figsize=(7,2))
