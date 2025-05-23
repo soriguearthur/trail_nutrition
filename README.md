@@ -35,6 +35,8 @@ Idéal pour optimiser vos apports énergétiques et hydriques, améliorer la ges
 
 from IPython.display import display, HTML
 
+GPX_PATH = 'your_gpx_file.gpx'
+
 INGREDIENTS = [{"nom": "gel", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1,"presence":True},{"nom": "gel caf", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":100,"preference":1,"presence":True},{"nom": "boisson", "marque" : "naak", "glucides": 55, "volume_ml": 500, "categorie": "liquide", "cafeine":0,"preference":1,"presence":True}]
 
 c = [ingredient for ingredient in INGREDIENTS if ingredient.get("presence", False)]
