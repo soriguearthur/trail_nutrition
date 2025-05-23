@@ -23,7 +23,19 @@ Idéal pour optimiser vos apports énergétiques et hydriques, améliorer la ges
 - Gain de temps par rapport à une planification manuelle  
 - Optimisation de la performance et prévention des désagréments liés à la nutrition  
 - Solution libre, transparente et évolutive
-- Bientôt un estimateur de durée de course (à venir)
+- 
+- 
+
+---
+
+## Aller plus loin?
+
+- Bientôt un estimateur de durée de course (en fonction de chrono sur le plat mais idéalement en fonction d'un utmb/itra index)
+- Prise en compte de la météo
+- Optimisation plus poussée en fonction du dénivelé
+- 
+- Si vous voulez que l'on aille plus loin dans ce projet pour pousser l'optimisation à son extrême, je suis très ouvert à échanger sur un projet à GRANDE ECHELLE (mon mail : arthur.sorigue@gmail.com)
+
 
 ---
 ## Exemple d'utilisation sur le web
