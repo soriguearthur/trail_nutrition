@@ -101,7 +101,13 @@ def estimer_temps(df, ravitos, temps_cible, montee=10, descente=2, fatigue_max=0
 
 
 def glucides_par_boisson(segments,ingredients, max_flasques):
-    glucides_par_flasque = [ing['glucides'] for _, ing in enumerate(ingredients) if ing.get("categorie") == "liquide"][0]
+    glucides_par_flasque = [ing['glucides'] for _, ing in enumerate(ingredients) if ing.get("categorie") == "liquide"]
+    if len(glucides_par_flasque)>0:
+        glucides_par_flasque = glucides_par_flasque[0] 
+    else:
+        glucides_par_flasque = 0
+        max_flasques = 0
+        
     resultats = []
 
     for seg in segments:
