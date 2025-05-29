@@ -49,7 +49,7 @@ DESCENTE = st.slider("Score descente (1 = excellent ; 2 = estimation moyenne ; 3
 FATIGUE_MAX = st.slider("Fatigue en fin de course (0 = pas de fatigue ; 1 = extrême)", 0.0, 1.0, 0.3)
 
 # === 3. Points de ravitaillement ===
-default_ravitos = "14.7, 20.9, 30.8, 41, 48.8, 58.7, 69.7, 77.9"
+default_ravitos = "14.7, 20.9, 30.8, 41, 48.8, 58.7, 69.7"
 ravitos_input = st.text_input("Kilomètres des ravitaillements (ex: 14.7, 20.9, 30.8, 41, 48.8, 58.7,69.7)" ,value=default_ravitos)
 try:
     RAVITOS_KM = [float(km.strip()) for km in ravitos_input.split(",") if km.strip()]
