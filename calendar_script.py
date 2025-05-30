@@ -1,10 +1,30 @@
 import json
 from datetime import datetime, timedelta
 
-def float_hours_to_time(base_dt, hours_float):
+ def float_hours_to_time(base_dt, hours_float):
     return base_dt + timedelta(hours=hours_float)
 
-def generate_ics(timing_dict, base_dt):
+def create_event(dt, summary, uid_prefix):
+    dtstart = dt.strftime("%Y%m%dT%H%M%S")
+    dtstamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    uid = f"{uid_prefix}-{dtstart}@example.com"
+
+    return [
+        "BEGIN:VEVENT",
+        f"UID:{uid}",
+        f"DTSTAMP:{dtstamp}",
+        f"DTSTART;TZID=Europe/Paris:{dtstart}",
+        f"SUMMARY:{summary}",
+        f"DESCRIPTION:{summary}",
+        "BEGIN:VALARM",
+        "TRIGGER:-PT1M",
+        "DESCRIPTION:Reminder",
+        "ACTION:DISPLAY",
+        "END:VALARM",
+        "END:VEVENT"
+    ]
+
+def generate_ics(data, base_dt):
     ics = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
@@ -22,36 +42,31 @@ def generate_ics(timing_dict, base_dt):
         "END:VTIMEZONE"
     ]
 
-    for hours_str, action in timing_dict.items():
+    # Nutrition events
+    for hours_str, action in data["timing"].items():
         hours = float(hours_str)
         event_dt = float_hours_to_time(base_dt, hours)
-        dtstart = event_dt.strftime("%Y%m%dT%H%M%S")
-        dtstamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-        uid = f"{action}-{hours_str}@example.com"
+        ics.extend(create_event(event_dt, f"Nutrition : {action}", "nutrition"))
 
-        ics.extend([
-            "BEGIN:VEVENT",
-            f"UID:{uid}",
-            f"DTSTAMP:{dtstamp}",
-            f"DTSTART;TZID=Europe/Paris:{dtstart}",
-            f"SUMMARY:Take {action}",
-            f"DESCRIPTION:Nutrition reminder: {action}",
-            "BEGIN:VALARM",
-            "TRIGGER:-PT1M",
-            "DESCRIPTION:Reminder",
-            "ACTION:DISPLAY",
-            "END:VALARM",
-            "END:VEVENT"
-        ])
+    # Flasque events toutes les 30min entre 2 points
+    distances = sorted(data["duree"].keys())
+    duree = data["duree"]
+    flasques = data["flasques"]
+
+    for i in range(len(distances) - 1):
+        dist_start = distances[i]
+        dist_end = distances[i + 1]
+
+        if dist_end in flasques:
+            nb_flasques = flasques[dist_end]
+            t_start = duree[dist_start]
+            t_end = duree[dist_end]
+
+            t = t_start
+            while t < t_end:
+                event_dt = float_hours_to_time(base_dt, t)
+                ics.extend(create_event(event_dt, f"Hydratation : boire {nb_flasques} flasques", "flasque"))
+                t += 0.5  # toutes les 30 min
 
     ics.append("END:VCALENDAR")
-
     return "\n".join(ics)
-
-
-# start_date = datetime(2025, 5, 30, 7, 0, 0)  # 30 mai 2025, 07:00
-# with open('data.json', 'r') as f:
-#     timing_json = json.load(f)['timing']
-# ics_content = generate_ics(timing_json, start_date)
-# with open("nutrition_plan.ics", "w") as f:
-#     f.write(ics_content)
