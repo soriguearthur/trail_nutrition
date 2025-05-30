@@ -16,7 +16,6 @@ def create_event(dt, summary, description, uid_prefix):
         f"DTSTART;TZID=Europe/Paris:{dtstart}",
         f"SUMMARY:{summary}",
         f"DESCRIPTION:{description}",
-        f"CATEGORIES:{'Nutrition' if 'Nutrition' in summary else 'Hydratation'}",
         "BEGIN:VALARM",
         "TRIGGER:-PT1M",
         f"DESCRIPTION:{description}",
