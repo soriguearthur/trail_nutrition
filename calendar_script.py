@@ -52,8 +52,9 @@ def generate_ics(data, base_dt):
     # Hydratation events (une seule fois à l'heure de début)
     for hydra in data.get("hydratation", []):
         event_dt = float_hours_to_time(base_dt, hydra["heure"])
-        desc = f"Boire {hydra['nb_flasques']} flasques entre les km {hydra['debut']} et {hydra['fin']}"
-        ics.extend(create_event(event_dt, "Hydratation", desc, "hydratation"))
-
+        summary = f"Hydratation : {hydra['nb_flasques']} flasques entre km {hydra['debut']} et {hydra['fin']}"
+        description = f"Boire {hydra['nb_flasques']} flasques entre les km {hydra['debut']} et {hydra['fin']}"
+        ics.extend(create_event(event_dt, summary, description, "hydratation"))
+        
     ics.append("END:VCALENDAR")
     return "\n".join(ics)
