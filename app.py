@@ -269,13 +269,10 @@ st.session_state["params"] = {
 }
 
 if len(st.session_state["results"])>0:
-    if st.button("Exporter le calendrier"):
-        dict_data = to_dict(st.session_state["results"])
-        #json_data = json.dumps(dict_data, indent=4, ensure_ascii=False)
-        #st.download_button(label="Exporter",data=json_data,file_name="data.json",mime="application/json")
-        ics_content = generate_ics(dict_data['timing'], pd.Timestamp(st.session_state["race_datetime"]))
-        with open("nutrition_plan.ics", "w") as f:
-            f.write(ics_content)
+    dict_data = to_dict(st.session_state["results"])
+    ics_content = generate_ics(dict_data['timing'], pd.Timestamp(st.session_state["race_datetime"]))
+    if st.download_button(label="Exporter le calendrier",data=ics_content,file_name="nutrition_plan.ics"):
         st.success(f"✅ Calendrier téléchargé avec succès !")
+
 
 st.info("💡 Astuce : Pense à imprimer cette page!")
