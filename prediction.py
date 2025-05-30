@@ -15,7 +15,7 @@ def load_dataset():
 def alpha_from_half_life(days):
     return np.log(2) / days
 
-def get_prediction(name,utmb_index,distance,denivele,races,test_size=0,weight_runner=1e4):
+def get_prediction(name,utmb_index,distance,denivele,races,test_size=0,weight_runner=1e2):
     alpha = alpha_from_half_life(365)
     df = load_dataset()
     if races is not None:
