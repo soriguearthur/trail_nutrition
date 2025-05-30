@@ -1,15 +1,111 @@
 import streamlit as st
-import gpxpy
 import pandas as pd
 import io
-from optimizer_script import generator,charger_trace
+from optimizer_script import generator,charger_trace,formater_duree,to_dict
+from prediction import get_prediction,get_prediction_utmb_index
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
-
+from datetime import datetime,timedelta
+import json
+from calendar_script import generate_ics
 
 st.set_page_config(page_title="Nutrition Trail", layout="wide")
 st.title("Optimisation Nutrition Trail")
+
+# === 0. Estimation de la durée de course ===
+
+#st.subheader("Données personnelles et estimation du temps")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    predict_time = st.checkbox("🔮 Estimer automatiquement le temps cible", value=True)
+with col2:
+    predict_utmb_index = st.checkbox("🔮 Estimer automatiquement l'utmb index", value=True)
+
+
+col3, col4, col5, col6,col7 = st.columns(5)
+with col3:
+    name = st.text_input("Nom du coureur", value="Arthur SORIGUE")
+with col4:
+    predicted_distance = st.number_input("Distance de la course (km)", min_value=10.0, max_value=1000.0, value=80.0)
+with col5:
+    predicted_dplus = st.number_input("D+ de la course (m)", min_value=0, max_value=20000, value=3900)
+with col6:
+    race_date = st.date_input("Date de la course")
+with col7:
+    race_time = st.time_input("Heure de départ",value='08:00')
+
+st.session_state["race_datetime"] = datetime.combine(race_date, race_time)
+
+
+st.markdown("**Courses passées (facultatif)**")
+default_past_races = pd.DataFrame([
+    {"course": 'Laudon',"nom": name, "distance": 42, "denivele": 2100, "temps (hh:mm:ss)": "5:17:00", "date (yyyy-mm-dd)": "2025-05-01"},
+    {"course": 'SainteLyon',"nom": name, "distance": 83, "denivele": 2100, "temps (hh:mm:ss)": "12:00:00", "date (yyyy-mm-dd)": "2024-12-01"},
+])
+past_races_df = st.data_editor(default_past_races, num_rows="dynamic", use_container_width=True)
+
+
+
+# Préparation du DataFrame de courses passées
+try:
+    user_races = past_races_df.copy()
+    user_races = user_races.rename(columns={'temps (hh:mm:ss)':'temps','date (yyyy-mm-dd)':'date'})
+    user_races['temps'] = pd.to_timedelta(user_races['temps'])
+    user_races['temps'] = (user_races['temps'].dt.total_seconds() / 3600).round(2)
+    user_races['date'] = pd.to_datetime(user_races['date'])
+    user_races = user_races.dropna(how='any',axis=0)
+except:
+    st.error("Erreur de format dans les courses passées.")
+    st.stop()
+
+#estimation utmb_index
+if "utmb_index" not in st.session_state:
+    st.session_state["utmb_index"] = 0
+
+if predict_utmb_index:
+    if st.button("📈 Estimer l'utmb_index"):
+        st.session_state["utmb_index"] = get_prediction_utmb_index(user_races)
+
+    utmb_index = st.number_input(
+        "UTMB Index prédit",
+        min_value=0,
+        max_value=1000,
+        value=st.session_state["utmb_index"]
+    )
+else:
+    utmb_index = st.number_input("UTMB Index", min_value=0, max_value=1000, value=547)
+
+user_races['utmb_index'] = utmb_index
+
+
+import streamlit as st
+
+# Initialisation dans session_state si pas encore défini
+if 'estimated_time' not in st.session_state:
+    st.session_state['estimated_time'] = 0.0
+
+if predict_time:
+    if st.button("📈 Estimer le temps"):
+        try:
+            estimation = get_prediction(
+                name=name,
+                utmb_index=utmb_index,
+                distance=predicted_distance,
+                denivele=predicted_dplus,
+                races=user_races,
+                test_size=0.0
+            )
+            st.session_state['estimated_time'] = estimation
+        except Exception as e:
+            st.error(f"Erreur dans la prédiction : {e}")
+
+# Affichage de la valeur persistante même sans re-estimation
+st.write(f"Temps estimé actuel : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
+
+
 
 # === 1. Chargement du fichier GPX ===
 gpx_file = st.file_uploader("📁 Télécharger le fichier GPX")#, type=["gpx"])
@@ -31,12 +127,13 @@ else:
     st.stop()
 
 
+
 # === 2. Paramètres de course ===
 st.subheader("Paramètres de la course")
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    TEMPS_CIBLE_TOTAL_HEURES = st.number_input("Temps cible total (heures)", min_value=1.0, value=12.0, step=0.5)
+    TEMPS_CIBLE_TOTAL_HEURES = st.number_input("Temps cible total (heures)", min_value=0.0, value=float(round(st.session_state['estimated_time'], 1)), step=0.5)
 with col2:
     NOMBRE_FLASQUES = st.number_input("Nombre de flasques", min_value=1, value=2)
 with col3:
@@ -92,6 +189,9 @@ SEED = st.number_input("Seed", value=0)
 
 
 # === 5. Bouton pour lancer l'analyse ===
+if 'results' not in st.session_state:
+    st.session_state['results'] = pd.DataFrame(dtype=float)
+
 if st.button("🚀 Générer le plan nutritionnel"):
     with st.spinner("Calcul en cours..."):
         results, plan = generator(
@@ -167,5 +267,15 @@ st.session_state["params"] = {
     "SEED": SEED,
     "RAVITOS_KM": RAVITOS_KM,
 }
+
+if len(st.session_state["results"])>0:
+    if st.button("Exporter le calendrier"):
+        dict_data = to_dict(st.session_state["results"])
+        #json_data = json.dumps(dict_data, indent=4, ensure_ascii=False)
+        #st.download_button(label="Exporter",data=json_data,file_name="data.json",mime="application/json")
+        ics_content = generate_ics(dict_data['timing'], pd.Timestamp(st.session_state["race_datetime"]))
+        with open("nutrition_plan.ics", "w") as f:
+            f.write(ics_content)
+        st.success(f"✅ Calendrier téléchargé avec succès !")
 
 st.info("💡 Astuce : Pense à imprimer cette page!")
