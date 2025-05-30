@@ -1,10 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
- def float_hours_to_time(base_dt, hours_float):
-    return base_dt + timedelta(hours=hours_float)
-
-def create_event(dt, summary, uid_prefix):
+def create_event(dt, summary, description, uid_prefix):
     dtstart = dt.strftime("%Y%m%dT%H%M%S")
     dtstamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     uid = f"{uid_prefix}-{dtstart}@example.com"
@@ -15,10 +12,10 @@ def create_event(dt, summary, uid_prefix):
         f"DTSTAMP:{dtstamp}",
         f"DTSTART;TZID=Europe/Paris:{dtstart}",
         f"SUMMARY:{summary}",
-        f"DESCRIPTION:{summary}",
+        f"DESCRIPTION:{description}",
         "BEGIN:VALARM",
         "TRIGGER:-PT1M",
-        "DESCRIPTION:Reminder",
+        f"DESCRIPTION:{description}",
         "ACTION:DISPLAY",
         "END:VALARM",
         "END:VEVENT"
@@ -46,10 +43,10 @@ def generate_ics(data, base_dt):
     for hours_str, action in data["timing"].items():
         hours = float(hours_str)
         event_dt = float_hours_to_time(base_dt, hours)
-        ics.extend(create_event(event_dt, f"Nutrition : {action}", "nutrition"))
+        ics.extend(create_event(event_dt, f"Nutrition : {action}", f"Nutrition : {action}", "nutrition"))
 
     # Flasque events toutes les 30min entre 2 points
-    distances = sorted(data["duree"].keys())
+    distances = sorted(data["duree"].keys(), key=float)
     duree = data["duree"]
     flasques = data["flasques"]
 
@@ -61,12 +58,13 @@ def generate_ics(data, base_dt):
             nb_flasques = flasques[dist_end]
             t_start = duree[dist_start]
             t_end = duree[dist_end]
-
             t = t_start
+
             while t < t_end:
                 event_dt = float_hours_to_time(base_dt, t)
-                ics.extend(create_event(event_dt, f"Hydratation : boire {nb_flasques} flasques", "flasque"))
-                t += 0.5  # toutes les 30 min
+                desc = f"Boire {nb_flasques} flasques entre les km {dist_start} et {dist_end}"
+                ics.extend(create_event(event_dt, "Hydratation", desc, "flasque"))
+                t += 0.5  # 30 min
 
     ics.append("END:VCALENDAR")
     return "\n".join(ics)
