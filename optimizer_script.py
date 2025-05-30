@@ -517,20 +517,40 @@ def generator(gpx,ravitos_km,temps_cible_total_heures,montee,descente,fatigue_ma
     return results,plan
 
 
-def parse_line(line):
-    pattern = r'(\d+h \d+min) → ([a-zA-Z\s]+)'
+
+def parse_timing_line(line):
+    """
+    Extrait toutes les paires 'temps → ingrédient' dans la chaîne,
+    même si elles sont juste séparées par un espace.
+    Retourne un dict {heure_float: ingrédient}.
+    """
+    pattern = r'(\d+h(?: \d+min)?)\s*→\s*([\w\s]+)'
     matches = re.findall(pattern, line)
-    return {convertir_en_heures(time.strip()): food.strip() for time, food in matches}
+    result = {}
+    for time_str, ingr in matches:
+        heure_float = convertir_en_heures(time_str.strip())
+        result[heure_float] = ingr.strip()
+    return result
 
-def to_dict(results):
-    dict = {}
-    dict['timing'] = {}
-    data = results['timing'].str.replace('<br>', ' ')
-    for line in data:
-        dict['timing'].update(parse_line(line))
-
-    ravitos = results.set_index('km_fin')[['durée_cumulée','flasques']]
-    ravitos['duree'] = ravitos.durée_cumulée.apply(convertir_en_heures).round(2)
-    ravitos = ravitos[['duree','flasques']].to_dict()
-    dict.update(ravitos)
-    return dict
+def to_dict(df):
+    output = {"nutrition": {}, "hydratation": []}
+    
+    # Nutrition
+    for timing_str in df['timing'].dropna().unique():
+        parsed = parse_timing_line(timing_str)
+        output["nutrition"].update(parsed)
+    
+    # Hydratation
+    for _, row in df.iterrows():
+        debut = row['km_debut']
+        fin = row['km_fin']
+        heure = convertir_en_heures(row['durée_cumulée'])
+        nb_flasques = float(row['flasques'])
+        output["hydratation"].append({
+            "debut": debut,
+            "fin": fin,
+            "heure": heure,
+            "nb_flasques": nb_flasques
+        })
+    
+    return output
