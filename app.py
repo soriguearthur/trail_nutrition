@@ -272,7 +272,7 @@ if len(st.session_state["results"])>0:
     dict_data = to_dict(st.session_state["results"])
     ics_content = generate_ics(dict_data, pd.Timestamp(st.session_state["race_datetime"]))
     if st.download_button(label="Exporter le calendrier",data=ics_content,file_name="nutrition_plan.ics"):
-        st.success(f"✅ Calendrier téléchargé avec succès !")
+        #st.success(f"✅ Calendrier téléchargé avec succès !")
 
 
 st.info("💡 Astuce : Pense à imprimer cette page!")
