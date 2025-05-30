@@ -11,6 +11,7 @@ from collections import Counter
 import io
 import base64
 from pathlib import Path
+import re
 
 # %%
 def charger_trace(gpx_path):
@@ -514,3 +515,22 @@ def generator(gpx,ravitos_km,temps_cible_total_heures,montee,descente,fatigue_ma
     segments = ajouter_timing_segments(segments,plan)
     results = construire_dataframe(segments,ingredients)
     return results,plan
+
+
+def parse_line(line):
+    pattern = r'(\d+h \d+min) → ([a-zA-Z\s]+)'
+    matches = re.findall(pattern, line)
+    return {convertir_en_heures(time.strip()): food.strip() for time, food in matches}
+
+def to_dict(results):
+    dict = {}
+    dict['timing'] = {}
+    data = results['timing'].str.replace('<br>', ' ')
+    for line in data:
+        dict['timing'].update(parse_line(line))
+
+    ravitos = results.set_index('km_fin')[['durée_cumulée','flasques']]
+    ravitos['duree'] = ravitos.durée_cumulée.apply(convertir_en_heures).round(2)
+    ravitos = ravitos.to_dict()
+    dict.update(ravitos)
+    return dict
