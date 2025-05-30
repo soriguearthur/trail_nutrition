@@ -531,6 +531,6 @@ def to_dict(results):
 
     ravitos = results.set_index('km_fin')[['durée_cumulée','flasques']]
     ravitos['duree'] = ravitos.durée_cumulée.apply(convertir_en_heures).round(2)
-    ravitos = ravitos.to_dict()
+    ravitos = ravitos[['duree','flasques']].to_dict()
     dict.update(ravitos)
     return dict
