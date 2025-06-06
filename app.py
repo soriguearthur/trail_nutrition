@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import io
 from optimizer_script import generator,charger_trace,formater_duree,to_dict
-from prediction import get_prediction,get_prediction_utmb_index
+from prediction import get_prediction_v2,get_prediction_utmb_index
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,7 +27,7 @@ with col2:
 
 col3, col4, col5, col6,col7 = st.columns(5)
 with col3:
-    name = st.text_input("Nom du coureur", value="Arthur SORIGUE")
+    name = st.text_input("Nom de la course", value="Andorra")
 with col4:
     predicted_distance = st.number_input("Distance de la course (km)", min_value=10.0, max_value=1000.0, value=80.0)
 with col5:
@@ -42,8 +42,8 @@ st.session_state["race_datetime"] = datetime.combine(race_date, race_time)
 
 st.markdown("**Courses passées (facultatif)**")
 default_past_races = pd.DataFrame([
-    {"course": 'Laudon',"nom": name, "distance": 42, "denivele": 2100, "temps (hh:mm:ss)": "5:17:00", "date (yyyy-mm-dd)": "2025-05-01"},
-    {"course": 'SainteLyon',"nom": name, "distance": 83, "denivele": 2100, "temps (hh:mm:ss)": "12:00:00", "date (yyyy-mm-dd)": "2024-12-01"},
+    {"course": 'Laudon',"nom": 'Arthur S.', "distance": 42, "denivele": 2100, "temps (hh:mm:ss)": "5:17:00", "date (yyyy-mm-dd)": "2025-05-01"},
+    {"course": 'SainteLyon',"nom": 'Arthur S.', "distance": 83, "denivele": 2100, "temps (hh:mm:ss)": "12:00:00", "date (yyyy-mm-dd)": "2024-12-01"},
 ])
 past_races_df = st.data_editor(default_past_races, num_rows="dynamic", use_container_width=True)
 
@@ -81,29 +81,39 @@ else:
 user_races['utmb_index'] = utmb_index
 
 
-import streamlit as st
 
 # Initialisation dans session_state si pas encore défini
 if 'estimated_time' not in st.session_state:
     st.session_state['estimated_time'] = 0.0
 
+if 'course_found' not in st.session_state:
+    st.session_state['course_found'] = ''
+
+if 'distance_found' not in st.session_state:
+    st.session_state['distance_found'] = 0.0
+
+if 'denivele_found' not in st.session_state:
+    st.session_state['denivele_found'] = 0.0
+
 if predict_time:
     if st.button("📈 Estimer le temps"):
         try:
-            estimation = get_prediction(
+            course_found,distance_found,denivele_found, estimation = get_prediction_v2(
                 name=name,
-                utmb_index=utmb_index,
                 distance=predicted_distance,
                 denivele=predicted_dplus,
-                races=user_races,
-                test_size=0.0
+                utmb_index=utmb_index,
             )
             st.session_state['estimated_time'] = estimation
+            st.session_state['course_found'] = course_found
+            st.session_state['distance_found'] = distance_found
+            st.session_state['denivele_found'] = denivele_found
+
         except Exception as e:
             st.error(f"Erreur dans la prédiction : {e}")
 
 # Affichage de la valeur persistante même sans re-estimation
-st.write(f"Temps estimé actuel : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
+st.write(f"{st.session_state['course_found']} - {st.session_state['distance_found']}km - {st.session_state['denivele_found']}D+ Temps estimé actuel : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
 
 
 
@@ -223,7 +233,6 @@ if st.button("🚀 Générer le plan nutritionnel"):
     }
     df_resume = pd.DataFrame(resume_data)
     st.session_state["df_resume"] = df_resume
-
     # Total ingrédients solides
     total_ingredients = Counter()
     for d in results["ingrédients_solides"]:
@@ -275,3 +284,4 @@ if len(st.session_state["results"])>0:
         st.success(f"✅ Calendrier téléchargé avec succès !")
 
 st.info("💡 Astuce : Pense à imprimer cette page!")
+
