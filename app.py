@@ -171,11 +171,11 @@ st.subheader("Ingrédients disponibles")
 default_data = [
     {"nom": "puree", "marque" : "naak","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":True},
     {"nom": "gel", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":True},
-    {"nom": "gel caf", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":100,"preference":1.0,"presence":True},
+    {"nom": "gel_caf", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":100,"preference":1.0,"presence":True},
     {"nom": "boisson", "marque" : "naak", "glucides": 55, "volume_ml": 500, "categorie": "liquide", "cafeine":0,"preference":1.0,"presence":True},
-    {"nom": "pate de fruits", "marque" : "decathlon","glucides": 20, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":False},
-    {"nom": "barre amande", "marque" : "decathlon","glucides": 14, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":False},
-    {"nom": "barre nougat", "marque" : "decathlon","glucides": 14, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":False}
+    {"nom": "pate_de_fruits", "marque" : "decathlon","glucides": 20, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":False},
+    {"nom": "barre_amande", "marque" : "decathlon","glucides": 14, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":False},
+    {"nom": "barre_nougat", "marque" : "decathlon","glucides": 14, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":False}
 ]
 st.info('Remarque : preference entre 0 et 1')
 
