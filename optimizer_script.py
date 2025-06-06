@@ -535,7 +535,8 @@ def parse_timing_line(line):
     result = {}
     for time_str, ingr in matches:
         heure_float = convertir_en_heures(time_str.strip())
-        result[heure_float] = ingr.strip()
+        result[heure_float] = ingr.split(' ')[0]
+
     return result
 
 def to_dict(df):
