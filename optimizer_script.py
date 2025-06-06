@@ -212,6 +212,7 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
     cafeine_par_cut = cafeine_max * duree_cafeine_h / duree_cible
 
     cafeine_cumulee_cut = 0
+    cafeine_totale = 0
 
     for _, row in df_glucides_h.iterrows():
         error = False
@@ -249,12 +250,17 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
         if glucides_restants_max >= min_g:
             constraints = [LinearConstraint([glucides], [glucides_restants_min], [glucides_restants_max])]
 
+        cafeine_restante_totale = cafeine_max - cafeine_totale
         cafeine_restante_cut = cafeine_par_cut - cafeine_cumulee_cut
+
         if np.any(cafeines > 0):
-            if (cafeine_restante_cut >= cafeine_min) & (glucides_restants_max >= glucides_min) & (heure>1):
-                constraints.append(LinearConstraint([cafeines], [cafeine_min], [cafeine_restante_cut]))
+            cafeine_ub = min(cafeine_restante_cut, cafeine_restante_totale)
+            if (cafeine_ub >= cafeine_min) and (glucides_restants_max >= glucides_min) and (heure > 1):
+                constraints.append(LinearConstraint([cafeines], [cafeine_min], [cafeine_ub]))
             else:
                 constraints.append(LinearConstraint([cafeines], [0], [0]))
+
+
         res = milp(
             c=np.array([1 + 0.1 * usage_counter[ing["nom"]] for ing in solides]),#np.array([1] * n),
             integrality=integrality,
@@ -273,7 +279,8 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
                     ingredients_solides[nom] = portion
                     total_glucides_solides += portion * ing["glucides"]
                     total_cafeine += portion * ing.get("cafeine", 0)
-
+            
+            cafeine_totale += total_cafeine
             cafeine_cumulee_cut += total_cafeine
             total = glucides_boire + total_glucides_solides
 
@@ -306,7 +313,6 @@ def optimisation(glucides_cible, df_glucides_h, ingredients, duree_cible, cafein
     resultats_par_heure = uniformiser_ingredients(resultats_par_heure, ingredients)
     resultats_par_heure = ajouter_timing(resultats_par_heure, ingredients)
     return resultats_par_heure
-
 def uniformiser_ingredients(df, ingredients):
     # Créer un dictionnaire d'ingrédients équivalents (par glucides), sans caféine
     glucides_equivalents = {}
