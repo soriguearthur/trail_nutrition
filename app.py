@@ -96,7 +96,7 @@ if 'denivele_found' not in st.session_state:
     st.session_state['denivele_found'] = 0.0
     
 if 'ml' not in st.session_state:
-    st.session_state['ml'] = False
+    st.session_state['ml'] = True
     
 if predict_time:
     if st.button("📈 Estimer le temps"):
@@ -116,9 +116,6 @@ if predict_time:
             st.write("course non présente dans la base de données -> estimation via machine learning")
             estimation = get_prediction(name,utmb_index,predicted_distance,predicted_dplus,user_races)
             st.session_state['estimated_time'] = estimation
-            st.session_state['course_found'] = None
-            st.session_state['distance_found'] = None
-            st.session_state['denivele_found'] = None
             st.session_state['ml'] = True
 
 # Affichage de la valeur persistante même sans re-estimation
