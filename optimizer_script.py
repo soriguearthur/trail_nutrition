@@ -40,9 +40,12 @@ def charger_trace(gpx_path):
         return pd.DataFrame({"distance": distances, "altitude": altitudes, "time": times})
     
 def arrondir_a_5min(temps):
-    x = 1 #5
-    return round(temps * 60 / x) * x / 60
-
+    try:
+        x = 1 #5
+        return round(temps * 60 / x) * x / 60
+    except:
+        return temps
+        
 def formater_duree(duree_h):
     duree_h = arrondir_a_5min(duree_h) 
     heures = int(duree_h)
