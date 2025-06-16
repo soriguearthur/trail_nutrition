@@ -122,7 +122,7 @@ if predict_time:
 if not st.session_state['ml']:
     st.write(f"{st.session_state['course_found']} - {st.session_state['distance_found']}km - {st.session_state['denivele_found']}D+ Temps estimé actuel : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
 else:
-    st.write(f"Temps estimé actuel via machine learning : {st.session_state['estimated_time']:.2f}h")
+    st.write(f"Temps estimé actuel via machine learning : {st.session_state['estimated_time']}h")
 
 
 # === 1. Chargement du fichier GPX ===
