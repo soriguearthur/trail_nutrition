@@ -114,7 +114,7 @@ if predict_time:
 
         except Exception as e:
             st.write("course non présente dans la base de données -> estimation via machine learning")
-            estimation = get_prediction(name,utmb_index,predicted_distance,predicted_dplus,user_races)
+            estimation = get_prediction(name,utmb_index,predicted_distance,predicted_dplus)
             st.session_state['estimated_time'] = estimation
             st.session_state['ml'] = True
 
