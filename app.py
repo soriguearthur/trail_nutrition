@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import io
 from optimizer_script import generator,charger_trace,formater_duree,to_dict
-from prediction import get_prediction_v2,get_prediction_utmb_index
+from prediction import get_prediction_v2,get_prediction_utmb_index,get_prediction
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
