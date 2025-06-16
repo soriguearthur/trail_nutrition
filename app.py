@@ -94,7 +94,10 @@ if 'distance_found' not in st.session_state:
 
 if 'denivele_found' not in st.session_state:
     st.session_state['denivele_found'] = 0.0
-
+    
+if 'ml' not in st.session_state:
+    st.session_state['ml'] = False
+    
 if predict_time:
     if st.button("📈 Estimer le temps"):
         try:
@@ -110,11 +113,19 @@ if predict_time:
             st.session_state['denivele_found'] = denivele_found
 
         except Exception as e:
-            st.error(f"Erreur dans la prédiction : {e}")
+            st.write("course non présente dans la base de données -> estimation via machine learning")
+            estimation = get_prediction(name,utmb_index,predicted_distance,predicted_dplus,user_races)
+            st.session_state['estimated_time'] = estimation
+            st.session_state['course_found'] = None
+            st.session_state['distance_found'] = None
+            st.session_state['denivele_found'] = None
+            st.session_state['ml'] = True
 
 # Affichage de la valeur persistante même sans re-estimation
-st.write(f"{st.session_state['course_found']} - {st.session_state['distance_found']}km - {st.session_state['denivele_found']}D+ Temps estimé actuel : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
-
+if not st.session_state['ml']:
+    st.write(f"{st.session_state['course_found']} - {st.session_state['distance_found']}km - {st.session_state['denivele_found']}D+ Temps estimé actuel : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
+else
+    st.write(f"Temps estimé actuel via machine learning : **{formater_duree(st.session_state['estimated_time'])} ({st.session_state['estimated_time']:.2f}h)**")
 
 
 # === 1. Chargement du fichier GPX ===
