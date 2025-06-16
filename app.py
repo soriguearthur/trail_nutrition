@@ -84,7 +84,7 @@ user_races['utmb_index'] = utmb_index
 
 # Initialisation dans session_state si pas encore défini
 if 'estimated_time' not in st.session_state:
-    st.session_state['estimated_time'] = 0.0
+    st.session_state['estimated_time'] = 1.0
 
 if 'course_found' not in st.session_state:
     st.session_state['course_found'] = ''
