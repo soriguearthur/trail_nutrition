@@ -27,15 +27,15 @@ with col2:
 
 col3, col4, col5, col6,col7 = st.columns(5)
 with col3:
-    name = st.text_input("Nom de la course", value="Andorra")
+    name = st.text_input("Nom de la course", value="luchon aneto trail")
 with col4:
-    predicted_distance = st.number_input("Distance de la course (km)", min_value=10.0, max_value=1000.0, value=80.0)
+    predicted_distance = st.number_input("Distance de la course (km)", min_value=10.0, max_value=1000.0, value=85.0)
 with col5:
-    predicted_dplus = st.number_input("D+ de la course (m)", min_value=0, max_value=20000, value=3900)
+    predicted_dplus = st.number_input("D+ de la course (m)", min_value=0, max_value=20000, value=5300)
 with col6:
     race_date = st.date_input("Date de la course")
 with col7:
-    race_time = st.time_input("Heure de départ",value='08:00')
+    race_time = st.time_input("Heure de départ",value='05:00')
 
 st.session_state["race_datetime"] = datetime.combine(race_date, race_time)
 
@@ -44,6 +44,7 @@ st.markdown("**Courses passées (facultatif)**")
 default_past_races = pd.DataFrame([
     {"course": 'Laudon',"nom": 'Arthur S.', "distance": 42, "denivele": 2100, "temps (hh:mm:ss)": "5:17:00", "date (yyyy-mm-dd)": "2025-05-01"},
     {"course": 'SainteLyon',"nom": 'Arthur S.', "distance": 83, "denivele": 2100, "temps (hh:mm:ss)": "12:00:00", "date (yyyy-mm-dd)": "2024-12-01"},
+    {"course": 'Andorra',"nom": 'Arthur S.', "distance": 77.8, "denivele": 4100, "temps (hh:mm:ss)": "12:33:00", "date (yyyy-mm-dd)": "2025-06-13"},
 ])
 past_races_df = st.data_editor(default_past_races, num_rows="dynamic", use_container_width=True)
 
@@ -162,8 +163,8 @@ DESCENTE = st.slider("Score descente (1 = excellent ; 2 = estimation moyenne ; 3
 FATIGUE_MAX = st.slider("Fatigue en fin de course (0 = pas de fatigue ; 1 = extrême)", 0.0, 1.0, 0.3)
 
 # === 3. Points de ravitaillement ===
-default_ravitos = "14.7, 20.9, 30.8, 41, 48.8, 58.7, 69.7"
-ravitos_input = st.text_input("Kilomètres des ravitaillements (ex: 14.7, 20.9, 30.8, 41, 48.8, 58.7,69.7)" ,value=default_ravitos)
+default_ravitos = "15,31,44.5,60.5,77"
+ravitos_input = st.text_input("Kilomètres des ravitaillements (ex: 15,31,44.5,60.5,77)" ,value=default_ravitos)
 try:
     RAVITOS_KM = [float(km.strip()) for km in ravitos_input.split(",") if km.strip()]
     RAVITOS_KM = [0] + RAVITOS_KM + [gpx.distance.max().round(2)]
@@ -175,7 +176,7 @@ except:
 st.subheader("Ingrédients disponibles")
 
 default_data = [
-    {"nom": "puree", "marque" : "naak","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":True},
+    {"nom": "puree", "marque" : "naak","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":0.25,"presence":True},
     {"nom": "gel", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":0,"preference":1.0,"presence":True},
     {"nom": "gel_caf", "marque" : "maurten","glucides": 25, "volume_ml": None, "categorie": "solide", "cafeine":100,"preference":1.0,"presence":True},
     {"nom": "boisson", "marque" : "naak", "glucides": 55, "volume_ml": 500, "categorie": "liquide", "cafeine":0,"preference":1.0,"presence":True},
@@ -290,4 +291,3 @@ if len(st.session_state["results"])>0:
         st.success(f"✅ Calendrier téléchargé avec succès !")
 
 st.info("💡 Astuce : Pense à imprimer cette page!")
-
